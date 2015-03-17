@@ -11,7 +11,8 @@ public class Networking : MonoBehaviour {
     public int Port = 8123;
 
     public GameObject player;
-    NetworkView view;
+    //NetworkView view;
+    NetworkView plyView;
 
     public string gameType = "0.1";
     public GameObject buttonPrefab;
@@ -19,35 +20,33 @@ public class Networking : MonoBehaviour {
 
     List<GameObject> buttons = new List<GameObject>();
 
-    int playerids = 0;
-
     GameObject mainCam;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         mainCam = Camera.main.gameObject;
-        view = GetComponent<NetworkView>();
-        Refresh();
-	}
+        //view = GetComponent<NetworkView>();
+        //Refresh();
+    }
 
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    // Update is called once per frame
+    void Update () {
+    
+    }
 
     public void StartServer()
     {
         Network.InitializeServer(4, Port, !Network.HavePublicAddress());
-        MasterServer.RegisterHost(gameType, "Da server yo");
+        MasterServer.RegisterHost(gameType, "Platform MP 0.1 Server");
         Canvas.SetActive(false);
         SpawnPlayer();
-        myPly.SendMessage("SetID", playerids);
-        playerids++;
+        //myPly.name = Network.player.ToString();
+        //myPly.SendMessage("SetID", playerids);
+        //playerids++;
     }
 
     void OnServerInitialized()
     {
-        print("Server initialized");
     }
 
     void FixedUpdate()
@@ -84,15 +83,14 @@ public class Networking : MonoBehaviour {
 
     void OnPlayerConnected(NetworkPlayer player)
     {
-        view.RPC("TagPlayer", RPCMode.All, playerids);
-        
-        playerids++;
+        print("Player connected (" + player.ipAddress + ")");
+        //print(player.ToString());
+        //plyView.RPC("SetNetPly", player, player);
     }
 
-    [RPC]
-    void TagPlayer(int id)
+    void OnPlayerDisconnected(NetworkPlayer player)
     {
-        myPly.SendMessage("SetID", id);
+
     }
 
     void OnFailedToConnect()
@@ -109,14 +107,15 @@ public class Networking : MonoBehaviour {
         ply.GetComponentInChildren<Camera>().enabled = true;
         ply.GetComponentInChildren<AudioListener>().enabled = true;
         myPly = ply;
+        plyView = myPly.GetComponent<PlayerScript>().view;
     }
-
 
     void OnConnectedToServer()
     {
         Canvas.SetActive(false);
 
         SpawnPlayer();
+        print(plyView.viewID);
     }
 
     void OnDisconnectedFromServer()

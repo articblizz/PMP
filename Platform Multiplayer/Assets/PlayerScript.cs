@@ -9,26 +9,30 @@ public class PlayerScript : MonoBehaviour {
     public GameObject bullet;
     public float BulletSpeed = 20;
     float lookingAtDirection = 1;
-    public static int playerID = 0;
+    public int playerID = 0;
 
     Vector3 correctPos;
-    NetworkView view;
+    public NetworkView view;
     Rigidbody2D rigidBody;
 
-
-
-	// Use this for initialization
-	void Start () {
-        rigidBody = GetComponent<Rigidbody2D>();
+    void Awake()
+    {
         view = GetComponent<NetworkView>();
 
-	}
+    }
+
+    // Use this for initialization
+    void Start () {
+
+        rigidBody = GetComponent<Rigidbody2D>();
+        gameObject.name = "Player " + view.viewID;
+
+    }
 
     void FixedUpdate()
     {
         if(view.isMine)
             rigidBody.velocity = new Vector2(direction * Speed, rigidBody.velocity.y);
-
     }
 
     void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
@@ -53,17 +57,17 @@ public class PlayerScript : MonoBehaviour {
         }
     }
 
-    void SetID(int id)
+
+    [RPC]
+    void SetNetPly(NetworkPlayer ply)
     {
-        playerID = id;
-        gameObject.name = "Player " + id;
+        //myNetPlayer = ply;
+        gameObject.name = ply.ToString();
     }
-	
-	// Update is called once per frame
-	void Update () {
+    
+    void Update () {
         if (view.isMine)
         {
-            //direction = Input.GetAxis("Horizontal");
             if (Input.GetKey(KeyCode.A))
                 direction = -1;
             else if (Input.GetKey(KeyCode.D))
@@ -73,18 +77,17 @@ public class PlayerScript : MonoBehaviour {
 
             if (direction != 0)
                 lookingAtDirection = (int)direction;
-            print(lookingAtDirection);
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 view.RPC("SpawnBullet", RPCMode.AllBuffered, transform.position, lookingAtDirection);
             }
-
         }
         else
         {
             transform.position = Vector2.Lerp(transform.position, correctPos, Time.deltaTime * 7);
         }
-	}
+    }
 
     [RPC]
     void SpawnBullet(Vector3 pos, float direction)

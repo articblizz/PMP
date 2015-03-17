@@ -21,7 +21,7 @@ public class BulletScript : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.tag == "Player")
+        if (col.tag == "Player" && Network.isServer)
             print("Hit player");
         Destroy(gameObject);
     }
