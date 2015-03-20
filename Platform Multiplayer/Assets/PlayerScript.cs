@@ -49,6 +49,7 @@ public class PlayerScript : MonoBehaviour {
     // Use this for initialization
     void Start () {
 
+        popupCanvas = GameObject.Find("Popupcanvas");
         rigidBody = GetComponent<Rigidbody2D>();
         gameObject.name = "Player " + view.viewID;
 
@@ -58,8 +59,7 @@ public class PlayerScript : MonoBehaviour {
     [RPC]
     void Broadcast(string text)
     {
-        if(view.isMine)
-            popupCanvas.SendMessage("AddText", text);
+        popupCanvas.SendMessage("AddText", text);
     }
 
     public void SendNickToPlayer(NetworkPlayer player)

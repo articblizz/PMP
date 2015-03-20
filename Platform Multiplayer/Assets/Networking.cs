@@ -30,17 +30,33 @@ public class Networking : MonoBehaviour {
 
     GameObject mainCam;
 
-    // Use this for initialization
     void Start () {
         mainCam = Camera.main.gameObject;
 
-        //view = GetComponent<NetworkView>();
-        //Refresh();
+        popupScript = popupCanvas.GetComponent<PopupText>();
     }
 
     // Update is called once per frame
     void Update () {
-    
+
+        var plys = GameObject.FindGameObjectsWithTag("Player");
+        for (int i = 0; i < plys.Length; i++)
+        {
+            if (plys[i].transform.parent != null)
+                return;
+
+            if (plys[i].GetComponentInChildren<Text>().text == "____DELMEPLS___")
+            {
+                Destroy(plys[i]);
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Network.RemoveRPCs(myPly.GetComponent<PlayerScript>().view.viewID);
+            Network.Disconnect();
+
+        }
     }
 
     public void StartServer()
@@ -108,6 +124,7 @@ public class Networking : MonoBehaviour {
     void OnPlayerDisconnected(NetworkPlayer player)
     {
         Network.DestroyPlayerObjects(player);
+        Network.RemoveRPCs(player);
         plyView.RPC("Broadcast", RPCMode.All, player.ipAddress + " disconnected:");
     }
 
