@@ -180,7 +180,8 @@ public class Networking : MonoBehaviour {
 
         foreach (GameObject ply in GameObject.FindGameObjectsWithTag("Player"))
         {
-            Network.Destroy(ply);
+            if(ply.GetComponent<NetworkView>() != null)
+                Network.Destroy(ply);
         }
         //Destroy(myPly);
         Canvas.SetActive(true);

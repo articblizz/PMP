@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\BulletScript.cs" />
+     <Compile Include="Assets\FixedRotation.cs" />
      <Compile Include="Assets\GoingUp.cs" />
      <Compile Include="Assets\Networking.cs" />
      <Compile Include="Assets\PlayerScript.cs" />
